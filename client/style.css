@@ -3,57 +3,64 @@
 @tailwind utilities;
 
 @layer base {
-    @font-face {
-        font-family: "Poppins";
-        font-style: normal;
-        font-weight: 400;
-        font-display: swap;
-        src: url("assets/fonts/Poppins/Poppins-Regular.ttf");
-    }
+  @font-face {
+    font-family: "Poppins";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("assets/fonts/Poppins/Poppins-Regular.ttf");
+  }
 
-    @font-face {
-        font-family: "Poppins";
-        font-style: italic;
-        font-weight: 400;
-        font-display: swap;
-        src: url("assets/fonts/Poppins/Poppins-Italic.ttf");
-    }
+  @font-face {
+    font-family: "Poppins";
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url("assets/fonts/Poppins/Poppins-Italic.ttf");
+  }
 
-    @font-face {
-        font-family: "Poppins";
-        font-style: normal;
-        font-weight: 600;
-        font-display: swap;
-        src: url("assets/fonts/Poppins/Poppins-SemiBold.ttf");
-    }
+  @font-face {
+    font-family: "Poppins";
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url("assets/fonts/Poppins/Poppins-SemiBold.ttf");
+  }
 
-    @font-face {
-        font-family: "Poppins";
-        font-style: italic;
-        font-weight: 600;
-        font-display: swap;
-        src: url("assets/fonts/Poppins/Poppins-SemiBoldItalic.ttf");
-    }
+  @font-face {
+    font-family: "Poppins";
+    font-style: italic;
+    font-weight: 600;
+    font-display: swap;
+    src: url("assets/fonts/Poppins/Poppins-SemiBoldItalic.ttf");
+  }
 
-    body {
-        --theme-brand: 248 166 107;
-        --theme-background: 255 255 255;
-        --theme-background-elevated: 243 244 245;
-        --theme-text: 44 49 57;
-        --theme-text-muted: 136 145 161;
-        --theme-text-very-muted: 193 199 208;
-        --theme-shadow: 236 238 240;
-        --theme-border: 236 238 240;
-    }
+  body {
+    --theme-brand: 248 166 107;
+    --theme-background: 255 255 255;
+    --theme-background-elevated: 243 244 245;
+    --theme-text: 44 49 57;
+    --theme-text-muted: 136 145 161;
+    --theme-text-very-muted: 193 199 208;
+    --theme-shadow: 236 238 240;
+    --theme-border: 236 238 240;
+  }
 
-    body.dark {
-        /* --theme-brand: 248 166 107; */
-        --theme-background: 34 38 44;
-        --theme-background-elevated: 44 49 57;
-        --theme-text: 193 199 208;
-        --theme-text-muted: 136 145 161;
-        --theme-text-very-muted: 94 107 128;
-        --theme-shadow: none;
-        --theme-border: 94 107 128;
-    }
+  body.dark {
+    /* --theme-brand: 248 166 107; */
+    --theme-background: 34 38 44;
+    --theme-background-elevated: 44 49 57;
+    --theme-text: 193 199 208;
+    --theme-text-muted: 136 145 161;
+    --theme-text-very-muted: 94 107 128;
+    --theme-shadow: none;
+    --theme-border: 94 107 128;
+  }
+}
+
+mark {
+  background-color: rgb(248 166 107 / 0.4);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 1px;
 }

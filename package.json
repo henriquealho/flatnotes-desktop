@@ -1,16 +1,22 @@
 {
-  "name": "flatnotes",
-  "version": "5.5.4",
+  "name": "flatnotes-desktop",
+  "productName": "flatnotes",
+  "version": "0.1.0-beta.1",
   "type": "module",
-  "description": "A database-less note taking web app that utilises a flat folder of markdown files for storage.",
-  "main": "client/index.html",
+  "description": "A sleek Electron-based desktop client for flatnotes. Your notes, your file system, now in a dedicated app.",
+  "main": "main.cjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "vite build",
     "watch": "vite build --watch",
-    "dev": "vite"
+    "dev": "vite",
+    "electron": "electron .",
+    "electron-dev": "set NODE_ENV=development && npm run build && electron .",
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
   },
-  "author": "Adam Dullage",
+  "author": "Henrique Alho",
   "license": "MIT",
   "dependencies": {
     "@jamescoyle/vue-icon": "0.1.2",
@@ -19,6 +25,8 @@
     "@toast-ui/editor": "3.2.2",
     "@toast-ui/editor-plugin-code-syntax-highlight": "3.1.0",
     "axios": "1.12.2",
+    "electron-squirrel-startup": "^1.0.1",
+    "lunr": "^2.3.9",
     "mousetrap": "1.6.5",
     "pinia": "3.0.3",
     "primevue": "3.53.1",
@@ -26,13 +34,24 @@
     "vue-router": "4.5.1"
   },
   "devDependencies": {
+    "@electron-forge/cli": "^7.11.1",
+    "@electron-forge/maker-deb": "^7.11.1",
+    "@electron-forge/maker-rpm": "^7.11.1",
+    "@electron-forge/maker-squirrel": "^7.11.1",
+    "@electron-forge/maker-zip": "^7.11.1",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.11.1",
+    "@electron-forge/plugin-fuses": "^7.11.1",
+    "@electron/fuses": "^1.8.0",
     "@vitejs/plugin-vue": "6.0.1",
     "autoprefixer": "10.4.21",
+    "concurrently": "^7.6.0",
+    "electron": "^25.0.0",
     "postcss": "8.5.6",
     "prettier": "3.6.2",
     "prettier-plugin-tailwindcss": "0.6.14",
     "sass-embedded": "1.93.2",
     "tailwindcss": "3.4.18",
-    "vite": "7.1.9"
+    "vite": "7.1.9",
+    "wait-on": "^7.0.1"
   }
 }

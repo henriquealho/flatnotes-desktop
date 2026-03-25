@@ -35,6 +35,7 @@
         :class="{ 'bg-theme-background-elevated': index === tagMenuIndex }"
         @click="tagChosen(tag)"
         @mousedown.prevent
+        :key="tag"
       >
         <!-- Note: Default behaviour for mouse down is prevented to stop focus moving to menu on click. -->
         {{ tag }}

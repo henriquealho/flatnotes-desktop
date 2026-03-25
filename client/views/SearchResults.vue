@@ -18,13 +18,19 @@
       <!-- Search Results -->
       <div
         v-for="result in results"
+        :key="result.title"
         class="mb-4 cursor-pointer rounded px-2 py-1 hover:bg-theme-background-elevated"
       >
         <RouterLink :to="{ name: 'note', params: { title: result.title } }">
           <!-- Title and Tags -->
           <div>
             <span v-html="result.titleHighlightsOrTitle" class="mr-2"></span>
-            <Tag v-for="tag in result.tagMatches" :tag="tag" class="mr-1" />
+            <Tag
+              v-for="tag in result.tagMatches"
+              :tag="tag"
+              v-bind:key="tag"
+              class="mr-1"
+            />
           </div>
           <!-- Last Modified and Content Highlights -->
           <div>

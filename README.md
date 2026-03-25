@@ -1,123 +1,97 @@
+# Flatnotes Desktop
+
 <p align="center">
-  <img src="docs/logo.svg" width="300px"></img>
-</p>
-<p align="center">
-  <img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/dullage/flatnotes?style=for-the-badge">
+<img src="docs/logo.svg" width="200px"></img>
 </p>
 
-A self-hosted, database-less note-taking web app that utilises a flat folder of markdown files for storage.
+**Flatnotes Desktop** is a standalone, cross-platform version of the popular [flatnotes](https://github.com/dullage/flatnotes) web app. By wrapping the original experience in Electron, I brought the experience to the desktop as a native application.
 
-Log into the [demo site](https://demo.flatnotes.io) and take a look around. *Note: This site resets every 15 minutes.*
+# Features
 
-## Contents
+This is an **independent fork** and will not be merged back into the original web repository. My goal is to maintain the desktop experience as a distinct entity.
+- **Stable Foundation:** Built on the **highly stable v5.5.4** of the original flatnotes.
+- **Local-First:** Designed to live on your machine, providing a "native" feel without the need for a self-hosted server environment.
+- **Self-Sustaining:** All future updates, features, and fixes are managed exclusively within this repository.
+- **Database-less:** Your notes are just a folder of .md files on your hard drive.
+- **Powerful Search:** Instant full-text indexing (shortcut /).
+- **Clean UI:** Distraction-free interface with Light and Dark mode support.
+- **No Lock-in:** Move your files to any other markdown editor at any time.
 
-* [Design Principle](#design-principle)
-* [Features](#features)
-* [Getting Started](#getting-started)
-  * [Hosted](#hosted)
-  * [Self Hosted](#self-hosted)
-* [Roadmap](#roadmap)
-* [Contributing](#contributing)
-* [Sponsorship](#sponsorship)
-* [Thanks](#thanks)
+# Why Desktop?
 
-## Design Principle
+I just really liked **flatnotes** and wanted it as a proper app on my computer. I figured if I wanted a version that didn't require a whole server setup just to write down a few thoughts, other people probably did too.
 
-flatnotes is designed to be a distraction-free note-taking app that puts your note content first. This means:
+Other reasons:
+- You shouldn't need to be a Docker expert or manage a web server just to take notes. This is "plug and play".
+- No accounts, no login screens, and zero dependency on the internet.
+- A dedicated window for Windows, macOS, and Linux that stays out of browsers.
 
-* A clean and simple user interface.
-* No folders, notebooks or anything like that. Just all of your notes, backed by powerful search and tagging functionality.
-* Quick access to a full-text search from anywhere in the app (keyboard shortcut "/").
+# Technical changes
+The original **flatnotes** uses the [Woosh](https://whoosh.readthedocs.io/en/latest/intro.html) Python library for its search engine. Which is great, but for a desktop app, I didn't want to force you to maintain a Python API or a backend just to search your notes. 
 
-Another key design principle is not to take your notes hostage. Your notes are just markdown files. There's no database, proprietary formatting, complicated folder structures or anything like that. You're free at any point to just move the files elsewhere and use another app.
+I swapped that out for [**Lunr.js**](https://lunrjs.com/), allowing:
+- **Native Search**: Runs directly in the app using JavaScript
+- **No dependencies**: No need for a Python, Pip or any other runtime installed on the system.
+- **Quite fast & powerfull**: Builds the search index locally and allows advanced search like Woosh does.
 
-Equally, the only thing flatnotes caches is the search index and that's incrementally synced on every search (and when flatnotes first starts). This means that you're free to add, edit & delete the markdown files outside of flatnotes even whilst flatnotes is running.
+# Current Status
 
-## Features
+- [x] Stripped Logic: Removed Docker, server-side dependencies, and web deployment assets.
+- [x] Native Window: Electron wrapper successfully initialized.
+- [x] Local Storage: App selects a default local folder on initial launch (%documents%/flatnotes)
+- [x] Markdown Engine: Core editing and viewing capabilities are functional.
+- [x] Resilience: Handle errors if the notes folder is moved or deleted.
+- [x] Code Cleanup: Remove remaining Auth tokens and web-only functions.
+- [x] Core Parity: Attachment support within desktop notes.
+- [x] Branding: Flatnotes app icons instead of Electron's.
+- [x] Core Parity: Search & Tagging support within desktop notes.
 
-* Mobile responsive web interface.
-* Raw/WYSIWYG markdown editor modes.
-* Advanced search functionality.
-* Note "tagging" functionality.
-* Customisable home page.
-* Wikilink support to easily link to other notes (`[[My Other Note]]`).
-* Light/dark themes.
-* Multiple authentication options (none, read-only, username/password, 2FA).
-* Restful API.
+# TODO
+- [ ] Distribution: Multi-platform builds (.exe, .dmg, .deb).
 
-See [the wiki](https://github.com/dullage/flatnotes/wiki) for more details.
+## Beta testing
 
-## Getting Started
+The first **beta version (v0.1.0-beta.1)** is availabe for download in the [releases](https://github.com/henriquealho/flatnotes-desktop/releases) section. 
 
-### Hosted
+I would greatly appreciate your help in testing this version. If you encounter any bugs or have suggestions for improvements, please feel free to open an issue.
 
-A quick and easy way to get started with flatnotes is to host it on PikaPods. Just click the button below and follow the instructions.
+# Getting Started
 
-[![PikaPods](https://www.pikapods.com/static/run-button-34.svg)](https://www.pikapods.com/pods?run=flatnotes)
+Prerequisites
 
+- Node.js (v16+)
+- npm
 
-### Self Hosted
+**Installation**
 
-If you'd prefer to host flatnotes yourself then the recommendation is to use Docker.
+```
+# Clone the fork
+git clone https://github.com/henriquealho/flatnotes-desktop.git
+cd flatnotes-desktop
 
-### Example Docker Run Command
+# Install dependencies
+npm install
 
-```shell
-docker run -d \
-  -e "PUID=1000" \
-  -e "PGID=1000" \
-  -e "FLATNOTES_AUTH_TYPE=password" \
-  -e "FLATNOTES_USERNAME=user" \
-  -e 'FLATNOTES_PASSWORD=changeMe!' \
-  -e "FLATNOTES_SECRET_KEY=aLongRandomSeriesOfCharacters" \
-  -v "$(pwd)/data:/data" \
-  -p "8080:8080" \
-  dullage/flatnotes:latest
+# Launch in development mode
+npm run electron-dev
+
+# Alternatively, you can use electronmon for hot-reloading
+npx electronmon .
 ```
 
-### Example Docker Compose
-```yaml
-version: "3"
+**Building distributables**
 
-services:
-  flatnotes:
-    container_name: flatnotes
-    image: dullage/flatnotes:latest
-    environment:
-      PUID: 1000
-      PGID: 1000
-      FLATNOTES_AUTH_TYPE: "password"
-      FLATNOTES_USERNAME: "user"
-      FLATNOTES_PASSWORD: "changeMe!"
-      FLATNOTES_SECRET_KEY: "aLongRandomSeriesOfCharacters"
-    volumes:
-      - "./data:/data"
-      # Optional. Allows you to save the search index in a different location: 
-      # - "./index:/data/.flatnotes"
-    ports:
-      - "8080:8080"
-    restart: unless-stopped
+```
+npm run make
 ```
 
-See the [Environment Variables](https://github.com/dullage/flatnotes/wiki/Environment-Variables) article in the wiki for a full list of configuration options.
+Artifacts will be output to `out/make/`.
 
-## Roadmap
+> ```bash
+> # bash / CMD
+> NODE_TLS_REJECT_UNAUTHORIZED=0 npx electron-forge make
+> ```
 
-I want to keep flatnotes as simple and distraction-free as possible which means limiting new features. This said, I welcome feedback and suggestions.
+# Credits
 
-## Contributing
-
-If you're interested in contributing to flatnotes, then please read the [CONTRIBUTING.md](CONTRIBUTING.md) file.
-
-## Sponsorship
-
-If you find this project useful, please consider buying me a beer. It would genuinely make my day.
-
-[![Sponsor](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/Dullage)
-
-## Thanks
-
-A special thanks to 2 fantastic open-source projects that make flatnotes possible.
-
-* [Whoosh](https://whoosh.readthedocs.io/en/latest/intro.html) - A fast, pure Python search engine library.
-* [TOAST UI Editor](https://ui.toast.com/tui-editor) - A GFM Markdown and WYSIWYG editor for the browser.
+This project is a desktop wrapper of the original flatnotes created by [@dullage](https://github.com/dullage). All core note-taking logic belongs to the original upstream repository.

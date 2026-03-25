@@ -56,7 +56,7 @@
       <div class="flex shrink-0 self-end md:self-baseline print:hidden">
         <!-- Delete Button -->
         <CustomButton
-          v-show="canModify && !isNewNote"
+          v-show="!isNewNote"
           label="Delete"
           :iconPath="mdilDelete"
           @click="deleteHandler"
@@ -77,7 +77,6 @@
         </CustomButton>
         <!-- Edit Toggle -->
         <Toggle
-          v-if="canModify"
           label="Edit"
           :isOn="editMode"
           class="ml-1"
@@ -120,7 +119,6 @@
 
 <script setup>
 import { mdiNoteOffOutline } from "@mdi/js";
-import { mdilContentSave, mdilDelete } from "@mdi/light-js";
 import Mousetrap from "mousetrap";
 import { useToast } from "primevue/usetoast";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
@@ -130,6 +128,7 @@ import {
   apiErrorHandler,
   createAttachment,
   createNote,
+  deleteAttachment,
   deleteNote,
   getNote,
   updateNote,
@@ -141,20 +140,16 @@ import LoadingIndicator from "../components/LoadingIndicator.vue";
 import Toggle from "../components/Toggle.vue";
 import ToastEditor from "../components/toastui/ToastEditor.vue";
 import ToastViewer from "../components/toastui/ToastViewer.vue";
-import { authTypes } from "../constants.js";
 import { useGlobalStore } from "../globalStore.js";
 import { getToastOptions } from "../helpers.js";
-import { isCurrentTokenStored } from "../tokenStorage.js";
 
 const props = defineProps({
   title: String,
 });
 
-const canModify = computed(
-  () => globalStore.config.authType != authTypes.readOnly,
-);
 let contentChangedTimeout = null;
 const editMode = ref(false);
+const sessionAttachments = ref([]);
 const globalStore = useGlobalStore();
 const isSaveChangesModalVisible = ref(false);
 const isDeleteModalVisible = ref(false);
@@ -225,6 +220,7 @@ function editHandler() {
 function setEditMode() {
   newTitle.value = note.value.title;
   unsavedChanges.value = false;
+  sessionAttachments.value = [];
   editMode.value = true;
 }
 
@@ -330,6 +326,8 @@ function noteSaveFailure(error) {
 }
 
 function noteSaveSuccess(close = false) {
+  // Attachments are now part of the saved note — clear the tracking list
+  sessionAttachments.value = [];
   unsavedChanges.value = false;
   if (close) {
     closeNote();
@@ -348,12 +346,12 @@ function closeHandler() {
 }
 
 function closeNote() {
+  // Delete attachments that were uploaded but not committed (discard path)
+  deleteSessionAttachments();
   clearDraft();
   editMode.value = false;
   if (isNewNote.value) {
     router.push({ name: "home" });
-  } else {
-    editMode.value = false;
   }
 }
 
@@ -374,19 +372,14 @@ function addImageBlobHook(file, callback) {
 }
 
 function postAttachment(file) {
-  // Invalid Character Validation
-  if (reservedFilenameCharacters.test(file.name)) {
-    badFilenameToast("Title");
-    return;
-  }
-
   // Uploading Toast
   toast.add(getToastOptions("Uploading attachment..."));
 
   // Upload the attachment
   return createAttachment(file)
     .then((data) => {
-      // Success Toast
+      // Track for cleanup on discard
+      sessionAttachments.value.push(data.path);
       toast.add(
         getToastOptions(
           "Attachment uploaded successfully ✓",
@@ -397,22 +390,17 @@ function postAttachment(file) {
       return data;
     })
     .catch((error) => {
-      if (error.response?.status === 409) {
-        // Note: The current implementation will append a datetime to the filename if it already exists.
-        // Error Toast
-        toast.add(
-          getToastOptions(
-            "An attachment with this filename already exists.",
-            "Duplicate",
-            "error",
-          ),
-        );
-      } else if (error.response?.status == 413) {
-        entityTooLargeToast("attachment");
-      } else {
-        apiErrorHandler(error, toast);
-      }
+      apiErrorHandler(error, toast);
     });
+}
+
+// Attachment cleanup helpers
+async function deleteSessionAttachments() {
+  const paths = [...sessionAttachments.value];
+  sessionAttachments.value = [];
+  for (const p of paths) {
+    await deleteAttachment(p);
+  }
 }
 
 // Content Change Watcher
@@ -442,31 +430,23 @@ function contentChangedHandler() {
 // Drafts
 function saveDraft() {
   const content = toastEditor.value.getMarkdown();
-  const userHasPersistedToken = isCurrentTokenStored();
   if (content) {
-    if (userHasPersistedToken) {
-      localStorage.setItem(note.value.title, content);
-    } else {
-      sessionStorage.setItem(note.value.title, content);
-    }
+    localStorage.setItem(note.value.title, content);
   }
 }
 
 function clearDraft() {
   localStorage.removeItem(note.value.title);
-  sessionStorage.removeItem(note.value.title);
 }
 
 function loadDraft() {
-  const localDraft = localStorage.getItem(note.value.title);
-  const sessionDraft = sessionStorage.getItem(note.value.title);
-  return localDraft || sessionDraft;
+  return localStorage.getItem(note.value.title);
 }
 
 // Keyboard Shortcuts
 // 'e' to edit
 Mousetrap.bind("e", () => {
-  if (editMode.value === false && canModify.value) {
+  if (editMode.value === false) {
     editHandler();
   }
 });

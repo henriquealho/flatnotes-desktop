@@ -50,7 +50,11 @@ function isWysiwygMode() {
   return toastEditor.isWysiwygMode();
 }
 
-defineExpose({ getMarkdown, isWysiwygMode });
+function insertText(text) {
+  toastEditor.insertText(text);
+}
+
+defineExpose({ getMarkdown, isWysiwygMode, insertText });
 </script>
 
 <style>

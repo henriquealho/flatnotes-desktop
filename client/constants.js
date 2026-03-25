@@ -12,9 +12,4 @@ export const searchSortOptions = {
   lastModified: 2,
 };
 
-export const authTypes = {
-  none: "none",
-  readOnly: "read_only",
-  password: "password",
-  totp: "totp",
-};
+export const NOTES_FOLDER_NAME = "flatnotes";
